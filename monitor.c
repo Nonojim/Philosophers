@@ -35,23 +35,6 @@ void	*monitor(void *arg)
 	while (1)
 	{
 		i = 0;
-		while (i < rules->nb_philos)
-		{
-			pthread_mutex_lock(&rules->death_mutex);
-			if ((get_time() - philos[i].last_meal) > rules->time_die)
-			{
-				rules->is_dead = 1;
-				pthread_mutex_unlock(&rules->death_mutex);
-				pthread_mutex_lock(&rules->print_mutex);
-				printf("%lld %d died\n", get_time() - rules->start_time,
-					philos[i].id);
-				pthread_mutex_unlock(philos->left_fork);
-				pthread_mutex_unlock(&rules->print_mutex);
-				return (NULL);
-			}
-			pthread_mutex_unlock(&rules->death_mutex);
-			i++;
-		}
 		if (rules->nb_must_eat != -1)
 		{
 			pthread_mutex_lock(&rules->death_mutex);
@@ -63,7 +46,28 @@ void	*monitor(void *arg)
 			}
 			pthread_mutex_unlock(&rules->death_mutex);
 		}
-		usleep(1000);
+		while (i < rules->nb_philos)
+		{
+			pthread_mutex_lock(&rules->death_mutex);
+			if ((get_time() - philos[i].last_meal) > rules->time_die)
+			{
+				rules->is_dead = 1;
+				pthread_mutex_unlock(&rules->death_mutex);
+				pthread_mutex_lock(&rules->print_mutex);
+				if (rules->nb_must_eat != -1)
+				{
+					if (rules->all_ate <= rules->nb_philos)
+						printf("%lld %d died\n", get_time() - rules->start_time, philos[i].id);
+				}
+				else
+					printf("%lld %d died\n", get_time() - rules->start_time, philos[i].id);
+				pthread_mutex_unlock(&rules->print_mutex);
+				return (NULL);
+			}
+			pthread_mutex_unlock(&rules->death_mutex);
+			i++;
+		}
+		ft_usleep(2);
 	}
 	return (NULL);
 }

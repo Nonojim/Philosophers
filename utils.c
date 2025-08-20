@@ -51,5 +51,5 @@ void	ft_usleep(long long time_in_ms)
 
 	start = get_time();
 	while (get_time() - start < time_in_ms)
-		usleep(100);
+		usleep(time_in_ms / 10);
 }

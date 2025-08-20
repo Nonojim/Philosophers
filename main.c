@@ -58,7 +58,17 @@ int	main(int argc, char **argv)
 		return (printf("Error: invalid arguments\n"), 1);
 	if (init_all(&rules, &philos, argc, argv))
 		return (printf("Error: init failed\n"), 1);
+	if (philos->rules->nb_philos == 1)
+	{
+		printf("0 1 has taken a fork\n");
+		ft_usleep(philos->rules->time_die);
+		printf("%i 1 died\n", philos->rules->time_die);
+		cleanup(&rules, philos);
+		return (0);
+	}
 	i = 0;
+	if (pthread_create(&monitor_thread, NULL, monitor, philos) != 0)
+		return (printf("Error: monitor thread failed\n"), 1);
 	while (i < rules.nb_philos)
 	{
 		if (pthread_create(&philos[i].thread_id, NULL,
@@ -66,8 +76,6 @@ int	main(int argc, char **argv)
 			return (printf("Error: thread creation failed\n"), 1);
 		i++;
 	}
-	if (pthread_create(&monitor_thread, NULL, monitor, philos) != 0)
-		return (printf("Error: monitor thread failed\n"), 1);
 	pthread_join(monitor_thread, NULL);
 	i = 0;
 	while (i < rules.nb_philos)
