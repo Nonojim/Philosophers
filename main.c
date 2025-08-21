@@ -87,7 +87,7 @@ int	main(int argc, char **argv)
 
 	if (check_args(argc, argv))
 		return (printf("Error: invalid arguments\n"), 1);
-	if (ft_atoi(argv[1]) == 0)
+	if (ft_atoll(argv[1]) == 0)
 		return (printf("Error: No philo put pasta in the fridge\n"), 1);
 	if (init_all(&rules, &philos, argc, argv))
 		return (printf("Error: init failed\n"), 1);

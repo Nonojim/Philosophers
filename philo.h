@@ -49,7 +49,7 @@ typedef struct s_philo
 
 long long	get_time(void);
 void		ft_usleep(long long time);
-int			ft_atoi(const char *str);
+long long	ft_atoll(const char *str);
 int			init_all(t_rules *rules, t_philo **philos, int argc, char **argv);
 int			init_philos(t_rules *rules, t_philo **philos);
 void		*routine(void *arg);

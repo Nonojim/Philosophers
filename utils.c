@@ -12,11 +12,11 @@
 
 #include "philo.h"
 
-int	ft_atoi(const char *nptr)
+long long	ft_atoll(const char *nptr)
 {
-	size_t	i;
-	int		sign;
-	int		result;
+	size_t			i;
+	int				sign;
+	long long		result;
 
 	i = 0;
 	sign = 1;
