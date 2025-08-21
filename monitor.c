@@ -37,10 +37,7 @@ int	deadinplate(t_rules *rules, t_philo *philo)
 		pthread_mutex_unlock(&rules->death_mutex);
 		pthread_mutex_lock(&rules->print_mutex);
 		if (rules->nb_must_eat == -1 || rules->all_ate < rules->nb_philos)
-		{
 			printf("%lld %d died\n", get_time() - rules->start_time, philo->id);
-			printf("NBR PHILO ALL_ATE%d \n", rules->all_ate);
-		}
 		pthread_mutex_unlock(&rules->print_mutex);
 		return (1);
 	}
