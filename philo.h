@@ -51,7 +51,16 @@ long long	get_time(void);
 void		ft_usleep(long long time);
 int			ft_atoi(const char *str);
 int			init_all(t_rules *rules, t_philo **philos, int argc, char **argv);
+int			init_philos(t_rules *rules, t_philo **philos);
 void		*routine(void *arg);
+void		takeforks(t_philo *philo);
 void		*monitor(void *arg);
+void		solophilo(t_rules *rules, t_philo *philos);
+int			create_threads(t_rules *rules, t_philo *philos);
+int			nomorepasta(t_rules *rules);
+int			deadinplate(t_rules *rules, t_philo *philos);
+void		release_forks(t_philo *philo);
+int			eat(t_philo *philo);
+void		print_action(t_philo *philo, char *msg);
 
 #endif

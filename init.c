@@ -29,8 +29,6 @@ int	init_mutexes(t_rules *rules)
 
 int	init_all(t_rules *rules, t_philo **philos, int argc, char **argv)
 {
-	int	i;
-
 	rules->nb_philos = ft_atoi(argv[1]);
 	rules->time_die = ft_atoi(argv[2]);
 	rules->time_eat = ft_atoi(argv[3]);
@@ -46,10 +44,19 @@ int	init_all(t_rules *rules, t_philo **philos, int argc, char **argv)
 		return (1);
 	if (init_mutexes(rules))
 		return (1);
+	if (init_philos(rules, philos))
+		return (1);
+	return (0);
+}
+
+int	init_philos(t_rules *rules, t_philo **philos)
+{
+	int	i;
+
+	i = 0;
 	*philos = malloc(sizeof(t_philo) * rules->nb_philos);
 	if (!*philos)
 		return (1);
-	i = 0;
 	while (i < rules->nb_philos)
 	{
 		(*philos)[i].id = i + 1;

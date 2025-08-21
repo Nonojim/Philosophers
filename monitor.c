@@ -12,15 +12,39 @@
 
 #include "philo.h"
 
-int	someone_died(t_rules *rules)
+int	nomorepasta(t_rules *rules)
 {
-	pthread_mutex_lock(&rules->print_mutex);
-	if (rules->is_dead)
+	if (rules->nb_must_eat != -1)
 	{
+		pthread_mutex_lock(&rules->death_mutex);
+		if (rules->all_ate >= rules->nb_philos)
+		{
+			rules->is_dead = 1;
+			pthread_mutex_unlock(&rules->death_mutex);
+			return (1);
+		}
+		pthread_mutex_unlock(&rules->death_mutex);
+	}
+	return (0);
+}
+
+int	deadinplate(t_rules *rules, t_philo *philo)
+{
+	pthread_mutex_lock(&rules->death_mutex);
+	if ((get_time() - philo->last_meal) > rules->time_die)
+	{
+		rules->is_dead = 1;
+		pthread_mutex_unlock(&rules->death_mutex);
+		pthread_mutex_lock(&rules->print_mutex);
+		if (rules->nb_must_eat == -1 || rules->all_ate < rules->nb_philos)
+		{
+			printf("%lld %d died\n", get_time() - rules->start_time, philo->id);
+			printf("NBR PHILO ALL_ATE%d \n", rules->all_ate);
+		}
 		pthread_mutex_unlock(&rules->print_mutex);
 		return (1);
 	}
-	pthread_mutex_unlock(&rules->print_mutex);
+	pthread_mutex_unlock(&rules->death_mutex);
 	return (0);
 }
 
@@ -34,37 +58,15 @@ void	*monitor(void *arg)
 	rules = philos[0].rules;
 	while (1)
 	{
+		if (nomorepasta(rules))
+			return (NULL);
 		i = 0;
-		if (rules->nb_must_eat != -1)
-		{
-			pthread_mutex_lock(&rules->death_mutex);
-			if (rules->all_ate >= rules->nb_philos)
-			{
-				rules->is_dead = 1;
-				pthread_mutex_unlock(&rules->death_mutex);
-				return (NULL);
-			}
-			pthread_mutex_unlock(&rules->death_mutex);
-		}
 		while (i < rules->nb_philos)
 		{
-			pthread_mutex_lock(&rules->death_mutex);
-			if ((get_time() - philos[i].last_meal) > rules->time_die)
-			{
-				rules->is_dead = 1;
-				pthread_mutex_unlock(&rules->death_mutex);
-				pthread_mutex_lock(&rules->print_mutex);
-				if (rules->nb_must_eat != -1)
-				{
-					if (rules->all_ate <= rules->nb_philos)
-						printf("%lld %d died\n", get_time() - rules->start_time, philos[i].id);
-				}
-				else
-					printf("%lld %d died\n", get_time() - rules->start_time, philos[i].id);
-				pthread_mutex_unlock(&rules->print_mutex);
+			if (nomorepasta(rules))
+				break ;
+			if (deadinplate(rules, &philos[i]))
 				return (NULL);
-			}
-			pthread_mutex_unlock(&rules->death_mutex);
 			i++;
 		}
 		ft_usleep(2);

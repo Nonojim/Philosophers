@@ -47,29 +47,23 @@ void	cleanup(t_rules *rules, t_philo *philos)
 	free(philos);
 }
 
-int	main(int argc, char **argv)
+void	solophilo(t_rules *rules, t_philo *philos)
 {
-	t_rules		rules;
-	t_philo		*philos;
-	pthread_t	monitor_thread;
-	int			i;
+	printf("0 1 has taken a fork\n");
+	ft_usleep(philos->rules->time_die);
+	printf("%i 1 died\n", philos->rules->time_die);
+	cleanup(rules, philos);
+}
 
-	if (check_args(argc, argv))
-		return (printf("Error: invalid arguments\n"), 1);
-	if (init_all(&rules, &philos, argc, argv))
-		return (printf("Error: init failed\n"), 1);
-	if (philos->rules->nb_philos == 1)
-	{
-		printf("0 1 has taken a fork\n");
-		ft_usleep(philos->rules->time_die);
-		printf("%i 1 died\n", philos->rules->time_die);
-		cleanup(&rules, philos);
-		return (0);
-	}
+int	create_threads(t_rules	*rules, t_philo	*philos)
+{
+	int			i;
+	pthread_t	monitor_thread;
+
 	i = 0;
 	if (pthread_create(&monitor_thread, NULL, monitor, philos) != 0)
 		return (printf("Error: monitor thread failed\n"), 1);
-	while (i < rules.nb_philos)
+	while (i < rules->nb_philos)
 	{
 		if (pthread_create(&philos[i].thread_id, NULL,
 				routine, &philos[i]) != 0)
@@ -78,11 +72,32 @@ int	main(int argc, char **argv)
 	}
 	pthread_join(monitor_thread, NULL);
 	i = 0;
-	while (i < rules.nb_philos)
+	while (i < rules->nb_philos)
 	{
 		pthread_join(philos[i].thread_id, NULL);
 		i++;
 	}
+	return (0);
+}
+
+int	main(int argc, char **argv)
+{
+	t_rules		rules;
+	t_philo		*philos;
+
+	if (check_args(argc, argv))
+		return (printf("Error: invalid arguments\n"), 1);
+	if (ft_atoi(argv[1]) == 0)
+		return (printf("Error: No philo put pasta in the fridge\n"), 1);
+	if (init_all(&rules, &philos, argc, argv))
+		return (printf("Error: init failed\n"), 1);
+	if (philos->rules->nb_philos == 1)
+	{
+		solophilo(&rules, philos);
+		return (0);
+	}
+	if (create_threads(&rules, philos))
+		return (1);
 	cleanup(&rules, philos);
 	return (0);
 }
