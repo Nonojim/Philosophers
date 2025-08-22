@@ -6,7 +6,7 @@
 /*   By: npederen <npederen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 12:29:59 by npederen          #+#    #+#             */
-/*   Updated: 2025/04/29 12:29:59 by npederen         ###   ########.fr       */
+/*   Updated: 2025/08/22 11:25:43 by npederen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,20 +47,28 @@ typedef struct s_philo
 	t_rules			*rules;
 }	t_philo;
 
-long long	get_time(void);
-void		ft_usleep(long long time);
-long long	ft_atoll(const char *str);
+//init.c
+int			init_mutexes(t_rules *rules);
 int			init_all(t_rules *rules, t_philo **philos, int argc, char **argv);
 int			init_philos(t_rules *rules, t_philo **philos);
-void		*routine(void *arg);
-void		takeforks(t_philo *philo);
-void		*monitor(void *arg);
+//main.c
+int			check_args(int argc, char **argv);
+void		cleanup(t_rules *rules, t_philo *philos);
 void		solophilo(t_rules *rules, t_philo *philos);
 int			create_threads(t_rules *rules, t_philo *philos);
-int			nomorepasta(t_rules *rules);
+//monitor.c
 int			deadinplate(t_rules *rules, t_philo *philos);
+int			nomorepasta(t_rules *rules);
+void		*monitor(void *arg);
+//routine.c
+void		print_action(t_philo *philo, char *msg);
 void		release_forks(t_philo *philo);
 int			eat(t_philo *philo);
-void		print_action(t_philo *philo, char *msg);
+void		takeforks(t_philo *philo);
+void		*routine(void *arg);
+//utils.c
+long long	ft_atoll(const char *str);
+long long	get_time(void);
+void		ft_usleep(long long time);
 
 #endif
